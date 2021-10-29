@@ -1,21 +1,37 @@
 package banco.priv;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import banco.priv.exc.SaldoInvalidoException;
 import banco.user.Conta;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class TransferenciaTest {
 
-  @Test(expected = SaldoInvalidoException.class)
-  public void realizaTransferenciaEntreContasComSaldoInvalido() throws SaldoInvalidoException {
+  @Test
+  public void realizaTransferenciaEntreContasComSaldoInvalido() {
     Conta conta1 = new Conta();
     Conta conta2 = new Conta();
 
     Transferencia transferencia = new Transferencia();
-    transferencia.realizarTransferencia(conta1, conta2, 10.0);
+    assertThrows(SaldoInvalidoException.class, () -> {
+      transferencia.realizarTransferencia(conta1, conta2, 10.0);
+    });
+  }
+
+  @Test
+  public void realizaTransferenciaEntreContasComSaldoInvalidoMessagem() {
+    Conta conta1 = new Conta();
+    Conta conta2 = new Conta();
+
+    Transferencia transferencia = new Transferencia();
+    Throwable exception = assertThrows(SaldoInvalidoException.class, () -> {
+      transferencia.realizarTransferencia(conta1, conta2, 10.0);
+    });
+    assertEquals("Saldo Inválido", exception.getMessage());
   }
 
   @Test
@@ -38,7 +54,7 @@ public class TransferenciaTest {
     Assert.assertFalse(transferencia.verificaValidadeDeValorDeTransferencia(-5.0));
   }
 
-  @Ignore
+  @Disabled
   public void verificaValorValidoTest(){
     Transferencia transferencia = new Transferencia();
     Assert.assertTrue(transferencia.verificaValidadeDeValorDeTransferencia(15.0));

@@ -30,6 +30,11 @@ public class TransacaoMockTest {
     Conta conta = Mockito.mock(Conta.class);
     Mockito.when(conta.getSaldo()).thenReturn(150.0);
     Pagamento pagamento = new Pagamento(new Date("2021/11/15"), 150);
+
+    PagamentoDAO pagamentoDAO = Mockito.mock(PagamentoDAO.class);
+    transacao.setPagamentoDAO(pagamentoDAO);
+    Mockito.when(pagamentoDAO.salvarPagamento(pagamento)).thenReturn(true);
+
     transacao.realizarPagamentoComSaldo(conta, pagamento);
     Assertions.assertTrue(pagamento.getPagamentoRealizado());
 

@@ -2,12 +2,17 @@ package banco.priv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 
 import banco.priv.exc.SaldoInvalidoException;
 import banco.user.Conta;
+import java.io.Closeable;
+import java.io.IOException;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TransferenciaTest {
 
@@ -58,6 +63,20 @@ public class TransferenciaTest {
   public void verificaValorValidoTest(){
     Transferencia transferencia = new Transferencia();
     Assert.assertTrue(transferencia.verificaValidadeDeValorDeTransferencia(15.0));
+  }
+
+  @Test
+  public void excecaoComMock() throws SaldoInvalidoException {
+    Transferencia transferencia = Mockito.mock(Transferencia.class);
+    Conta conta1 = new Conta();
+    Conta conta2 = new Conta();
+
+    doThrow(new SaldoInvalidoException("Saldo Inválido com Mock")).
+        when(transferencia).realizarTransferencia(conta1, conta2, 150);
+    Throwable exception = assertThrows(SaldoInvalidoException.class, () -> {
+      transferencia.realizarTransferencia(conta1, conta2, 150.0);
+    });
+    Assertions.assertEquals("Saldo Inválido com Mock", exception.getMessage());
   }
 
 }

@@ -37,6 +37,8 @@ public class PagamentoDAO {
 
       int size = 0;
       while(resultSet.next()){
+        // essa string é referente à coluna da tabela no BD
+        double valor = Double.valueOf(resultSet.getString("valor"));
         size++;
       }
       return size;

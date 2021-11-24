@@ -28,17 +28,23 @@ public class TransacaoMockTest {
   public void realizaPagamentoComSaldoDeContaTwoTest(){
     Transacao transacao = new Transacao();
     Conta conta = Mockito.mock(Conta.class);
-    Mockito.when(conta.getSaldo()).thenReturn(150.0);
+    Mockito.when(conta.getSaldo()).thenReturn(500.0);
     Pagamento pagamento = new Pagamento(new Date("2021/11/15"), 150);
 
     PagamentoDAO pagamentoDAO = Mockito.mock(PagamentoDAO.class);
     transacao.setPagamentoDAO(pagamentoDAO);
     Mockito.when(pagamentoDAO.salvarPagamento(pagamento)).thenReturn(true);
 
+    //até este ponto, o método debitarValor da classe conta não foi chamado
+    Mockito.verify(conta, Mockito.times(0)).debitarValor(pagamento.getValor());
     transacao.realizarPagamentoComSaldo(conta, pagamento);
+    //na linha anterior, o método debitarValor foi chamado, e portanto, o próximo
+    //verify está correto.
+    Mockito.verify(conta, Mockito.times(1)).debitarValor(pagamento.getValor());
+
     Assertions.assertTrue(pagamento.getPagamentoRealizado());
 
-    Mockito.verify(conta, Mockito.times(1)).debitarValor(pagamento.getValor());
+
   }
 
   @Test
@@ -50,7 +56,8 @@ public class TransacaoMockTest {
     Mockito.when(pagamento.realizarPagamento(conta.getSaldo())).thenReturn(false);
     transacao.realizarPagamentoComSaldo(conta, pagamento);
 
-    Mockito.verify(pagamento, Mockito.times(1)).realizarPagamento(conta.getSaldo());
+    Mockito.verify(pagamento, Mockito.times(1)).
+        realizarPagamento(150);
   }
 
   @Test
